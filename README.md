@@ -1,2 +1,3 @@
-# depent
-A gem wrapper for native dependence
+# 目标
+
+通过这个的包装，可以方便地帮助解决gem对于native的依赖，使得gem在其它操作系统上的安装更加方便
