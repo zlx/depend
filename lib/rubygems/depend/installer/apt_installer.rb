@@ -1,5 +1,5 @@
 module Depend
-  class AptInstaller < Base
+  class AptInstaller < BaseInstaller
 
     def self.install(names)
       system "su -c 'apt-get install #{names.join(' ')}'"

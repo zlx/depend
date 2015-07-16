@@ -1,5 +1,5 @@
 module Depend
-  class YumInstaller < Base
+  class YumInstaller < BaseInstaller
 
     def self.install(names)
       system "su -c 'yum install #{names.join(' ')}'"

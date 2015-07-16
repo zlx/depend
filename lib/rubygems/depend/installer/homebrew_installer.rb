@@ -1,5 +1,5 @@
 module Depend
-  class HomebrewInstaller < Base
+  class HomebrewInstaller < BaseInstaller
 
     def self.install(names)
       system "su -c 'brew install #{names.join(' ')}'"
