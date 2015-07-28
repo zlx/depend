@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Newell Zhu"]
   spec.email         = ["zlx.star@gmail.com"]
   spec.license       = 'MIT'
-  spec.summary       = %q{RubyGems Native Depend Solution.}
+  spec.summary       = %q{RubyGems Native Depend Solution}
   spec.description   = %q{RubyGems Native Depend Solution.}
   spec.homepage      = "https://github.com/zlx/depend"
 
@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "ohai", "~> 6.20.0"
+  spec.add_dependency "os_platform"
 
   spec.add_development_dependency "bundler", "~> 1.9"
   spec.add_development_dependency "rake", "~> 10.0"

@@ -10,37 +10,52 @@ module Gem
   class Installer
     module Depend
       require 'rubygems/user_interaction'
-      require 'rubygems/depend/host_detection'
-      require 'rubygems/depend/installer'
+      require 'os_platform'
+      require 'depend'
 
       include Gem::UserInteraction
 
+      alias_method :orig_build_extensions, :build_extensions
+
       def build_extensions
-        super
         puts "in build extension"
-      rescue ExtensionBuildError => e
-        # Install platform dependencies and try the build again.
-        if install_platform_dependencies
-          super
-        else
-          raise
-        end
+        install_platform_dependencies
+        orig_build_extensions
       end
 
       def install_platform_dependencies
         puts "install dependency for gem"
-        platform = Depend::HostDetection.new.platform
-        package_provider = Depend::HostDetection.new.package_provider
-        if installer = Depend::Installer.installer_for(package_provider)
-          missing_deps = Depend::Dependency.dependencies_for(platform, spec.name)
+        os_platform = OSPlatform.local
+        platform, platform_version = os_platform.platform, os_platform.platform_version
+        depend_instance = Depend::Base.new(platform, platform_version)
+        package_providers = depend_instance.package_providers
+        unless package_providers.empty?
+          package_provider = decide(package_providers)
+          deps = depend_instance.dependencies_for(package_provider)
 
-          unless missing_deps.empty?
-            say "Trying to install native dependencies for Gem '#{spec.name}': #{missing_deps.join ' '}"
-            unless installer.install(spec.name, missing_deps)
-              raise Gem::InstallError, "Failed to install native dependencies for '#{spec.name}'."
+          unless deps.empty?
+            say "Trying to install native dependencies for Gem '#{spec.name}': #{deps.join ' '}"
+            deps.each do |dep|
+              unless package_provider.new.install(spec.name, dep)
+                raise Gem::InstallError, "Failed to install native dependencies for '#{spec.name}'."
+              end
             end
           end
-          return true
+        end
+      end
+
+      private
+
+      def decide(package_providers)
+        if package_providers.size > 1
+          puts "You have installed many package_providers, which do your want to install dependency for #{spec.name}"
+          puts package_providers.map.each_with_index do |p, i|
+            "#{i+1}: #{p.display_name}\n"
+          end.join
+          index = STDIN.getc
+          (package_providers[index] || package_providers.shift).new
+        else
+          package_providers.shift.new
         end
       end
     end

@@ -2,7 +2,7 @@
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/depend`. To experiment with that code, run `bin/console` for an interactive prompt.
 
-With Depend, you can handle native dependent more easily for rubygems
+With Depend, you can handle native dependent more easily
 
 ## Installation
 
@@ -21,6 +21,27 @@ Or install it yourself as:
     $ gem install depend
 
 ## Usage
+
+```ruby
+class YourGem::Depend < Depend::Base
+  def mac_os_x
+    case package_provider
+    when 'homebrew'
+      %w{mysql-dev}
+    when 'macports'
+      %w{mysql-dev}
+    end
+  end
+
+  def ubuntu
+    %w{mysql-dev}
+  end
+
+  def fedora
+    %w{mysql-devel}
+  end
+end
+```
 
 ## Development
 
