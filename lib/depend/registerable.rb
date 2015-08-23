@@ -10,6 +10,7 @@ module Depend
     end
 
     def register(package_provider, platform, platform_version = nil)
+      puts "in register"
       fail PlatformNotSupportedError unless platform_accepted?(platform)
       @platforms ||= {}
       if @platforms[platform]
