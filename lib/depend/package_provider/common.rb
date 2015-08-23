@@ -17,6 +17,7 @@ module Depend
       # command: command for package_provider
       # dep: library need installed
       def exec_install(dep)
+        puts "Run: #{command} install #{dep}"
         `#{command} install #{dep}`
       end
 

@@ -1,7 +1,7 @@
 require "depend/version"
 
 module Depend
-  autoload :Registerable,              "depend/registerable"
+  autoload :Register,                  "depend/register"
   autoload :Dependent,                 "depend/dependent"
   autoload :Configuration,             "depend/configuration"
 
@@ -28,14 +28,12 @@ module Depend
     yield(configuration)
   end
 
+  def self.register
+    @register_instance ||= Register.init_with_default_register
+  end
+
   class Base
-    extend Registerable
     extend Dependent
-
-    self.register PackageProvider::Apt,      'Ubuntu'
-    self.register PackageProvider::Homebrew, 'MacOS'
-
-    OPERATION_SYSTEMS = %w{ Ubuntu MacOS }.freeze
 
     def initialize(platform, platform_version = nil)
       @platform = platform
@@ -43,7 +41,7 @@ module Depend
     end
 
     def package_providers
-      self.class.package_providers_for(@platform, @platform_version)
+      Depend.register.package_providers_for(@platform, @platform_version)
     end
 
     def dependencies_for(package_provider)

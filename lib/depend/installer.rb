@@ -1,13 +1,15 @@
 require 'os_platform'
 
 module Depend
+  class InstallError < ::Gem::InstallError; end
+
   class Installer
 
-    def self.install
-      install_platform_dependencies
+    def self.install(spec)
+      install_platform_dependencies(spec)
     end
 
-    def self.install_platform_dependencies
+    def self.install_platform_dependencies(spec)
       puts "install dependency for gem"
       os_platform = OSPlatform.local
       depend_instance = Depend::Base.new(os_platform.platform, os_platform.platform_version)
@@ -20,7 +22,7 @@ module Depend
           puts "Trying to install native dependencies for Gem '#{spec.name}': #{deps.join ' '}"
           deps.each do |dep|
             unless package_provider.install(spec.name, dep)
-              raise Gem::InstallError, "Failed to install native dependencies for '#{spec.name}'."
+              fail Depend::InstallError, "Failed to install native dependencies for '#{spec.name}'."
             end
           end
         end

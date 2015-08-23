@@ -1,12 +1,27 @@
 module Depend
   class PlatformNotSupportedError < StandardError; end
 
-  module Registerable
-    OPERATION_SYSTEMS = %w{ Ubuntu MacOS }.freeze
-    attr_accessor :platforms
+  class Register
+
+    OPERATION_SYSTEMS = %w{ Ubuntu mac_os_x }.freeze
+    attr_reader :platforms
+
+    def self.init_with_default_register
+      instance = self.new
+      instance.register PackageProvider::Apt,      'Ubuntu'
+      instance.register PackageProvider::Homebrew, 'mac_os_x'
+      instance
+    end
 
     def acceptable_operations_systems
       OPERATION_SYSTEMS
+    end
+
+    def package_providers_for(platform, platform_version)
+      puts @platforms
+      return [] if @platforms.nil? || @platforms.empty?
+      _platform = @platforms[platform] || []
+      _platform.select{|plat| version_include?(plat.shift, platform_version)}.map(&:last)
     end
 
     def register(package_provider, platform, platform_version = nil)
@@ -18,12 +33,6 @@ module Depend
       else
         @platforms[platform] = [[platform_version, package_provider]]
       end
-    end
-
-    def package_providers_for(platform, platform_version)
-      return [] if @platforms.nil? || @platforms.empty?
-      _platform = @platforms[platform]
-      _platform.select{|plat| version_include?(plat.shift, platform_version)}.map(&:last)
     end
 
     private
@@ -41,7 +50,8 @@ module Depend
     end
 
     def platform_accepted?(platform)
-      OPERATION_SYSTEMS.map(&:downcase).include?(platform.downcase)
+      acceptable_operations_systems.map(&:downcase).include?(platform.downcase)
     end
+
   end
 end

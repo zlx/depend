@@ -3,3 +3,4 @@ require 'depend'
 
 require 'minitest/autorun'
 require 'minitest/spec'
+require 'mocha/mini_test'
